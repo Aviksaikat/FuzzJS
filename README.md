@@ -3,7 +3,7 @@
 > Saikat Karmakar | Dec 16 : 2021
 
 ---
-- Requirements
+- Requirements:
 ```bash
 python3
 pip install colorama
@@ -11,7 +11,7 @@ pip install futures
 ```
 
 
-- Usage :
+- Usage:
 ```bash
 usage: get-js.py [-h] [-f FILES] [-t THREADS] [-o OUT]
 
@@ -26,5 +26,5 @@ optional arguments:
   -o OUT, --out OUT     Output directory
 ```
 
-- Screenshot
+- Screenshot:
 ![](img.png)
