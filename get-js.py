@@ -3,10 +3,17 @@ from re import sub
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 from requests import get
-from sys import argv
+from sys import argv, exit, stderr
 import os 
 from colorama import Fore, Style
 #import wget
+
+class customParser(argparse.ArgumentParser):
+	def error(self, message):
+		#stderr.write('error: %s\n' % message)
+		self.print_help()
+		exit(2)
+
 
 def get_file(url):
 	url = url.strip()
@@ -20,7 +27,7 @@ def get_file(url):
 		f.write(r.content)
 
 def main():
-	parser = argparse.ArgumentParser(description="File downloader")
+	parser = customParser(description="File downloader")
 	parser.add_argument("-f", "--files", type=str, help="File containing URL files")
 	parser.add_argument('-t', '--threads', help='Number of threads (default 15)', type=int, default=15)
 	parser.add_argument("-o", "--out", type=str, help="Output directory")
@@ -30,32 +37,23 @@ def main():
 	# 	print(f"[!]See Usage: {argv[0]} -h")
 	# 	exit(-1)
 
-	url_list = open(args.files).readlines()
-	
-	"""
-	Syntax: os.mkdir(path, mode = 0o777, *, dir_fd = None)
+	try:
+		url_list = open(args.files).readlines()
+		path = os.path.join("./", args.out)
+		os.mkdir(path)
+		print(f"{Fore.YELLOW}[*]{Fore.GREEN}Downloading the files....{Style.RESET_ALL}")
+		with ThreadPoolExecutor(max_workers=args.threads) as executor:
+			for url in url_list:
+				f = executor.submit(get_file, url)
+				#print(f.result())
 
-	Parameter:
-	path: A path-like object representing a file system path. A path-like object is either a string or bytes object representing a path.
-	mode (optional): A Integer value representing mode of the directory to be created. If this parameter is omitted then default value Oo777 is used.
-	dir_fd (optional): A file descriptor referring to a directory. The default value of this parameter is None.
-	If the specified path is absolute then dir_fd is ignored.
+	except Exception as e:
+		print(f"{Fore.RED}[!]Error....missing arguments{Style.RESET_ALL}")
+		parser.print_help()
+		pass
 
-	Note: The ‘*’ in parameter list indicates that all following parameters (Here in our case ‘dir_fd’) are keyword-only parameters and they can be provided using their name, not as positional parameter.
-
-	Return Type: This method does not return any value.
-	"""
-	
-	path = os.path.join("./", args.out)
-	os.mkdir(path)
-	#file.get_file(url)
-
-	print(f"{Fore.YELLOW}[*]{Fore.GREEN}Downloading the files....")
-	with ThreadPoolExecutor(max_workers=args.threads) as executor:
-		for url in url_list:
-			f = executor.submit(get_file, url)
-			#print(f.result())
 
 if __name__ == '__main__':
 	main()
+	
 
