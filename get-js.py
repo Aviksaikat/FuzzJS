@@ -23,14 +23,15 @@ def get_file(url):
 	r = get(url, allow_redirects=True, verify=False, timeout=5)
 
 	#print("Dhoom")
-	with open(f"./{args.out}/{fname}", "wb") as f:
+	#print(f"./output/{fname}")
+	with open(f"./output/{fname}", "wb") as f:
 		f.write(r.content)
 
 def main():
 	parser = customParser(description="File downloader")
 	parser.add_argument("-f", "--files", type=str, help="File containing URL files")
 	parser.add_argument('-t', '--threads', help='Number of threads (default 15)', type=int, default=15)
-	parser.add_argument("-o", "--out", type=str, help="Output directory")
+	#parser.add_argument("-o", "--out", type=str, help="Output directory")
 	args = parser.parse_args()
 	#parser.add_argument("-f", type=str, help="pass the file containing urls")
 	# if len(argv) != 2:
@@ -39,7 +40,7 @@ def main():
 
 	try:
 		url_list = open(args.files).readlines()
-		path = os.path.join("./", args.out)
+		path = os.path.join("./", "output")
 		os.mkdir(path)
 		print(f"{Fore.YELLOW}[*]{Fore.GREEN}Downloading the files....{Style.RESET_ALL}")
 		with ThreadPoolExecutor(max_workers=args.threads) as executor:
